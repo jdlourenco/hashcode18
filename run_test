@@ -1,0 +1,10 @@
+echo done
+cat samples/a_example.in | ruby self_drive.rb > results/a_example.result
+echo done
+cat samples/b_should_be_easy.in | ruby self_drive.rb > results/b_should_be_easy.result
+echo done
+cat samples/c_no_hurry.in | ruby self_drive.rb > results/c_no_hurry.result
+echo done
+cat samples/d_metropolis.in | ruby self_drive.rb > results/d_metropolis.result
+echo done
+cat samples/e_high_bonus.in | ruby self_drive.rb > results/e_high_bonus.result
