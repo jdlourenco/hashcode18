@@ -39,30 +39,6 @@ def car_ride_score(car, ride)
 	end
 end
 
-def get_max_score(rides, fleet)
-	max_score = {
-		car:  nil,
-		ride: nil,
-		score: 0
-	}
-	
-	fleet.each do |car_idx, car|
-		rides.each do |ride|
-			car_ride_score = car_ride_score(car, ride)
-
-			if car_ride_score > max_score[:score]
-				max_score = {
-					car:   car_idx,
-					ride:  ride,
-					score: car_ride_score
-				}
-			end
-		end
-	end
-
-	max_score
-end
-
 #rides = RIDES.dup
 
 RIDES = []
@@ -114,16 +90,58 @@ fleet = {}
 	}
 end
 
+def get_max_score(rides, fleet)
+	# max_score = {
+	# 	car:  nil,
+	# 	ride: nil,
+	# 	score: 0
+	# }
+
+	max_score = {}
+
+	(0..F-1).each do |i|
+		max_score[i] = {
+			ride: nil,
+			score: 0
+		}
+	end
+	
+	fleet.each do |car_idx, car|
+		max_car_score = max_score[car_idx]
+
+		rides.each do |ride|
+			car_ride_score = car_ride_score(car, ride)
+
+			if car_ride_score > max_car_score[:score]
+				max_score[car_idx] = {
+					ride:  ride,
+					score: car_ride_score
+				}
+			end
+		end
+	end
+
+	#STDERR.puts max_score
+	max_score
+end
+
 rides = RIDES.dup
+
+STDERR.puts "total rides: #{rides.size}"
 
 while true do
 	max_score = get_max_score(rides, fleet)
 
-	break if max_score[:score] == 0
+	break if max_score.map {|id, ms| ms[:score] }.max == 0
 
-	assign_ride_to_car(fleet, max_score[:car], max_score[:ride])
-
-	rides.delete max_score[:ride]
+	max_score.each do |car_idx, max_score|
+		if rides.include? max_score[:ride]
+			assign_ride_to_car(fleet, car_idx, max_score[:ride])
+			rides.delete max_score[:ride]
+		end
+	end
+	
+  STDERR.puts "#{rides.size} left to assign"
 end
 
 fleet.each do |c, r|
